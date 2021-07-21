@@ -1,0 +1,5 @@
+.env
+node_modules
+start.bat
+.idea
+creds.json
