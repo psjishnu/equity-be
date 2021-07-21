@@ -68,7 +68,7 @@ router.get("/getdata", async (req, res) => {
   if (long2 && short2) {
     spread2 = roundNumber(long2 / short2);
   }
-  if (spread1 && spread2) {
+  if (spread1 && spread2 && firm1 !== firm2) {
     var1 = roundNumber(100 * (spread2 - spread1));
 
     const firmData = await Data.findOne({ firm1, firm2 });
@@ -89,6 +89,12 @@ router.get("/getdata", async (req, res) => {
       ];
       const datanew = new Data({ firm1, firm2, varianceList: newData });
       await datanew.save();
+      avg = 0;
+      for (let i = 0; i < 10; i++) {
+        avg += Number(newData[i].variance);
+        varianceArr.push(newData[i].variance);
+      }
+      avg /= 10;
     } else {
       let { varianceList } = firmData;
       if (varianceList[9].date !== dateNow) {
