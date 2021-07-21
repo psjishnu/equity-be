@@ -43,8 +43,7 @@ router.get("/getdata", async (req, res) => {
   res.json({ result1, result2 });
 });
 
-router.get("/f", async (req, res) => {
-  const { firm1, firm2 } = req.query;
-  return res.json({ firm1, firm2 });
+router.get("/", async (req, res) => {
+  return res.render("index");
 });
 module.exports = router;
