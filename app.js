@@ -18,7 +18,7 @@ app.set("view engine", "ejs");
 
 //connect to mongoDB
 
-//mongoConnect();
+mongoConnect();
 
 //to parse the incoming requests to json
 app.use(express.json());
