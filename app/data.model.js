@@ -9,6 +9,10 @@ const dataSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  sector: {
+    type: String,
+    default: "",
+  },
   varianceList: [],
 });
 

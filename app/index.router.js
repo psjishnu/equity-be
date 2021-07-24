@@ -26,10 +26,10 @@ const processFirm = (quotes) => {
   }
   return arr;
 };
-router.get("/getdata", async (req, res) => {
+router.post("/getdata", async (req, res) => {
   const today = moment(new Date()).format("YYYY-MM-DD");
   const prevDay = moment(new Date()).subtract(1, "month").format("YYYY-MM-DD");
-  let { firm1, firm2 } = req.query;
+  let { firm1, firm2, sector, changeSector } = req.body;
   firm1 = firm1.toUpperCase();
   firm2 = firm2.toUpperCase();
   const firm1Data = await yahooFinance.historical({
@@ -51,7 +51,8 @@ router.get("/getdata", async (req, res) => {
     short2 = "",
     spread1 = "",
     spread2 = "",
-    avg = "";
+    sectorName = "";
+  avg = "";
   var1 = "";
   const varianceArr = [];
   if (result1.length > 0) {
@@ -87,7 +88,12 @@ router.get("/getdata", async (req, res) => {
         { variance: var1, date: dateNow },
         { variance: var1, date: dateNow },
       ];
-      const datanew = new Data({ firm1, firm2, varianceList: newData });
+      const datanew = new Data({
+        firm1,
+        firm2,
+        varianceList: newData,
+        sector: sector || "",
+      });
       await datanew.save();
       avg = 0;
       for (let i = 0; i < 10; i++) {
@@ -95,7 +101,13 @@ router.get("/getdata", async (req, res) => {
         varianceArr.push(newData[i].variance);
       }
       avg /= 10;
+      sectorName = sector || "";
     } else {
+      if (changeSector) {
+        firmData.sector = sector;
+      }
+      sectorName = firmData.sector;
+      await firmData.save();
       let { varianceList } = firmData;
       if (varianceList[9].date !== dateNow) {
         for (let i = 1; i < 10; i++) {
@@ -109,6 +121,7 @@ router.get("/getdata", async (req, res) => {
         }
         avg /= 10;
         firmData.varianceList = varianceList;
+
         await firmData.save();
       } else {
         avg = 0;
@@ -120,7 +133,6 @@ router.get("/getdata", async (req, res) => {
       }
     }
   }
-
   res.json({
     long1,
     long2,
@@ -131,6 +143,7 @@ router.get("/getdata", async (req, res) => {
     var1,
     avg,
     varianceArr,
+    sectorName,
   });
 });
 
